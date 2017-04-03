@@ -1,17 +1,11 @@
 # coding: utf-8
 
-from datetime import datetime
-from datetime import timedelta
 import json
 
 import flask
-from google.appengine.ext import ndb
-from google.appengine.ext import deferred
 from google.appengine.api import urlfetch
 import github
 
-from api import helpers
-import auth
 import config
 import model
 import util
@@ -60,6 +54,7 @@ def gh_account(username, repo=None):
       next_url=util.generate_next_url(repo_cursor),
       username=account_db.username,
     )
+
 
 ###############################################################################
 # Cron Stuff
