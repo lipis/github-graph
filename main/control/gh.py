@@ -76,14 +76,14 @@ def gh_admin_top():
   for repo in repos['items']:
     account = repo['owner']
     account_db = model.Account.get_or_insert(
-        account['login'],
-        avatar_url=account['avatar_url'].split('?')[0],
-        email=account['email'] if 'email' in account else '',
-        name=account['login'],
-        followers=account['followers'] if 'followers' in account else 0,
-        organization=account['type'] == 'Organization',
-        username=account['login'],
-      )
+      account['login'],
+      avatar_url=account['avatar_url'].split('?')[0],
+      email=account['email'] if 'email' in account else '',
+      name=account['login'],
+      followers=account['followers'] if 'followers' in account else 0,
+      organization=account['type'] == 'Organization',
+      username=account['login'],
+    )
 
   return 'OK %d of %d' % (len(repos['items']), repos['total_count'])
 
@@ -93,9 +93,9 @@ def admin_cron():
   if config.PRODUCTION and 'X-Appengine-Cron' not in flask.request.headers:
     flask.abort(403)
   account_dbs, account_cursor = model.Account.get_dbs(
-      order=util.param('order') or 'modified',
-      status=util.param('status'),
-    )
+    order=util.param('order') or 'modified',
+    status=util.param('status'),
+  )
 
   for account_db in account_dbs:
     task.queue_account(account_db)

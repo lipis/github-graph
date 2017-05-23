@@ -193,6 +193,11 @@ def queue_account(account_db):
     elif delta.seconds > 30 * 60:
       queue_it = True
 
+  if (delta.days > 0) and account_db.status != 'failed':
+    account_db.status = 'syncing'
+    account_db.put()
+    queue_it = True
+
   if queue_it:
     deferred.defer(sync_account, account_db)
 
