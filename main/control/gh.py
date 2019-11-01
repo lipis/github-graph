@@ -109,3 +109,11 @@ def admin_repo_cleanup():
     flask.abort(403)
   task.queue_repo_cleanup(util.param('days', int) or 5)
   return 'OK'
+
+
+@app.route('/admin/cron/account/cleanup/')
+def admin_account_cleanup():
+  if config.PRODUCTION and 'X-Appengine-Cron' not in flask.request.headers:
+    flask.abort(403)
+  task.queue_account_cleanup(util.param('stars', int) or 9999)
+  return 'OK'

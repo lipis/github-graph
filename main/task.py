@@ -291,3 +291,24 @@ def repo_cleanup(days, cursor=None):
   ndb.delete_multi(repo_keys)
   if repo_cursors['next']:
     deferred.defer(repo_cleanup, days, repo_cursors['next'])
+
+
+###############################################################################
+# Account Clean-ups
+###############################################################################
+def queue_account_cleanup(stars=9999):
+  deferred.defer(account_cleanup, stars)
+
+
+def account_cleanup(stars, cursor=None):
+  account_qry = model.Account.query().filter(model.Account.stars < stars)
+  account_keys, account_cursors = util.get_dbs(
+      account_qry,
+      order='stars',
+      keys_only=True,
+      cursor=cursor,
+    )
+
+  ndb.delete_multi(account_keys)
+  if account_cursors['next']:
+    deferred.defer(account_cleanup, days, account_cursors['next'])

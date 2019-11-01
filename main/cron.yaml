@@ -23,6 +23,10 @@ cron:
     url: /admin/cron/repo/?stars=20000&page=2
     schedule: every 4 hours
 
-  - description: cleanup
+  - description: cleanup-repo
     url: /admin/cron/repo/cleanup/?days=4
+    schedule: every day 01:00
+
+  - description: cleanup-account
+    url: /admin/cron/account/cleanup/?stars=9999
     schedule: every day 01:00
