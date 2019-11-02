@@ -44,7 +44,7 @@ def welcome():
 
 @app.route('/new/')
 def new_accounts():
-  person_dbs, person_cursor = model.Account.get_dbs(
+  account_dbs, account_cursor = model.Account.get_dbs(
     order='-created',
     limit=128,
   )
@@ -53,7 +53,7 @@ def new_accounts():
     'account/list_new.html',
     title='Latest Additions',
     html_class='account-new',
-    person_dbs=person_dbs,
+    account_dbs=account_dbs,
   ))
 
 
@@ -74,7 +74,7 @@ def person():
 
   response = flask.make_response(flask.render_template(
       'account/list_person.html',
-      title='Top People',
+      title='People',
       html_class='account-person',
       person_dbs=person_dbs,
       order=order,
@@ -99,7 +99,7 @@ def organization():
 
   response = flask.make_response(flask.render_template(
       'account/list_organization.html',
-      title='Top Organizations',
+      title='Organizations',
       html_class='account-organization',
       organization_dbs=organization_dbs,
       order=order,
@@ -122,7 +122,7 @@ def repo():
 
   response = flask.make_response(flask.render_template(
       'account/list_repo.html',
-      title='Top Repositories',
+      title='Repositories',
       html_class='account-repo',
       repo_dbs=repo_dbs,
       order=order.replace('-', ''),
