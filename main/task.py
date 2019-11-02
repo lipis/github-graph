@@ -169,6 +169,7 @@ def email_conflict_notification(email):
 # GH Tasks
 ###############################################################################
 def queue_account(account_db):
+  import logging
   if account_db.status in ['404']:
     return
 
