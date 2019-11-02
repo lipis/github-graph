@@ -19,27 +19,28 @@ def welcome():
   if util.param('username'):
     return flask.redirect(flask.url_for('gh_account', username=util.param('username')))
   person_dbs, person_cursor = model.Account.get_dbs(
-      order='-stars',
-      organization=False,
-    )
+    order='-stars',
+    organization=False,
+  )
 
   organization_dbs, organization_cursor = model.Account.get_dbs(
-      order='-stars',
-      organization=True,
-    )
+    order='-stars',
+    organization=True,
+  )
 
   repo_dbs, repo_cursor = model.Repo.get_dbs(
-      order='-stars',
-    )
+    order='-stars',
+  )
 
   return flask.render_template(
-      'welcome.html',
-      html_class='welcome',
-      title='Top People, Organizations and Repositories',
-      person_dbs=person_dbs,
-      organization_dbs=organization_dbs,
-      repo_dbs=repo_dbs,
-    )
+    'welcome.html',
+    html_class='welcome',
+    title='Top People, Organizations and Repositories',
+    description='Discover new projects from a different perspective.',
+    person_dbs=person_dbs,
+    organization_dbs=organization_dbs,
+    repo_dbs=repo_dbs,
+  )
 
 
 @app.route('/new/')
@@ -73,13 +74,14 @@ def person():
     )
 
   response = flask.make_response(flask.render_template(
-      'account/list_person.html',
-      title='People',
-      html_class='account-person',
-      person_dbs=person_dbs,
-      order=order,
-      limit=limit,
-    ))
+    'account/list_person.html',
+    title='People',
+    description='Top People on GitHub',
+    html_class='account-person',
+    person_dbs=person_dbs,
+    order=order,
+    limit=limit,
+  ))
   response.set_cookie('limit', str(limit))
   return response
 
@@ -98,13 +100,14 @@ def organization():
     )
 
   response = flask.make_response(flask.render_template(
-      'account/list_organization.html',
-      title='Organizations',
-      html_class='account-organization',
-      organization_dbs=organization_dbs,
-      order=order,
-      limit=limit,
-    ))
+    'account/list_organization.html',
+    title='Organizations',
+    description='Top Organizations on GitHub',
+    html_class='account-organization',
+    organization_dbs=organization_dbs,
+    order=order,
+    limit=limit,
+  ))
   response.set_cookie('limit', str(limit))
   return response
 
@@ -123,6 +126,7 @@ def repo():
   response = flask.make_response(flask.render_template(
       'account/list_repo.html',
       title='Repositories',
+      description='Top Repositories on GitHub',
       html_class='account-repo',
       repo_dbs=repo_dbs,
       order=order.replace('-', ''),
