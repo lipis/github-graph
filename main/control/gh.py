@@ -48,7 +48,7 @@ def gh_account(username, repo=None):
   return flask.render_template(
       'account/view.html',
       html_class='gh-view',
-      title=account_db.name,
+      title='%s%s' % ('#%d - ' % account_db.rank if account_db.rank else '', account_db.name),
       description='https://github.com/' + account_db.username,
       image_url=account_db.avatar_url,
       canonical_url=flask.url_for('gh_account', username=username, _external=True),
@@ -119,4 +119,13 @@ def admin_account_cleanup():
   if config.PRODUCTION and 'X-Appengine-Cron' not in flask.request.headers:
     flask.abort(403)
   task.queue_account_cleanup(util.param('stars', int) or 9999)
+  return 'OK'
+
+
+@app.route('/admin/cron/rank/')
+def admin_rank():
+  if config.PRODUCTION and 'X-Appengine-Cron' not in flask.request.headers:
+    flask.abort(403)
+
+  task.rank_accounts()
   return 'OK'

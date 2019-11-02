@@ -28,5 +28,9 @@ cron:
     schedule: every day 01:00
 
   - description: cleanup-account
-    url: /admin/cron/account/cleanup/?stars=10999
+    url: /admin/cron/account/cleanup/?stars=11000
     schedule: every day 01:00
+
+  - description: rank-accounts
+    url: /admin/cron/rank/
+    schedule: every day 01:30

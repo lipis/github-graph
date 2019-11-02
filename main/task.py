@@ -275,7 +275,7 @@ def sync_account(account_db):
 ###############################################################################
 # Repo Clean-ups
 ###############################################################################
-def queue_repo_cleanup(days=5):
+def queue_repo_cleanup(days=3):
   deferred.defer(repo_cleanup, days)
 
 
@@ -297,7 +297,7 @@ def repo_cleanup(days, cursor=None):
 ###############################################################################
 # Account Clean-ups
 ###############################################################################
-def queue_account_cleanup(stars=9999):
+def queue_account_cleanup(stars=10000):
   deferred.defer(account_cleanup, stars)
 
 
@@ -313,3 +313,26 @@ def account_cleanup(stars, cursor=None):
   ndb.delete_multi(account_keys)
   if account_cursors['next']:
     deferred.defer(account_cleanup, days, account_cursors['next'])
+
+
+###############################################################################
+# Rank Accounts
+###############################################################################
+def rank_accounts(stars=10000):
+  deferred.defer(account_rank, True)
+  deferred.defer(account_rank, False)
+
+
+def account_rank(organization):
+  account_qry = model.Account.query().filter(model.Account.organization == organization)
+  account_dbs, account_cursors = util.get_dbs(
+    account_qry,
+    order='-stars',
+    limit=-1,
+  )
+  updated_dbs = []
+  for index, account_db in enumerate(account_dbs, start=1):
+    account_db.rank = index
+    updated_dbs.append(account_db)
+
+  ndb.put_multi(updated_dbs)

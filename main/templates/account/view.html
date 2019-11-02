@@ -9,7 +9,12 @@
       <p>
         <img class="avatar" src="{{account_db.avatar_url}}?size=512" alt="Avatar of {{account_db.name}}">
       </p>
-      <h1>{{account_db.name}}</h1>
+      <h1>
+        # if account_db.rank
+          <small title="Global rank">#{{account_db.rank}}</small>
+        # endif
+        {{account_db.name}}
+      </h1>
       <h3 class="ellipsis">
         <a href="https://github.com/{{account_db.username}}" target="_blank">
           github.com/{{account_db.username}}
