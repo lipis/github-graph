@@ -59,7 +59,7 @@ def new_accounts():
 
 @app.route('/people/')
 def person():
-  limit = int(util.param('limit', int) or flask.request.cookies.get('limit') or config.MAX_DB_LIMIT)
+  limit = min(int(util.param('limit', int) or flask.request.cookies.get('limit') or config.MAX_DB_LIMIT), config.MAX_DB_LIMIT)
   order = util.param('order') or '-stars'
   if 'repo' in order:
     order = '-public_repos'
@@ -86,7 +86,7 @@ def person():
 
 @app.route('/organizations/')
 def organization():
-  limit = int(util.param('limit', int) or flask.request.cookies.get('limit') or config.MAX_DB_LIMIT)
+  limit = min(int(util.param('limit', int) or flask.request.cookies.get('limit') or config.MAX_DB_LIMIT), config.MAX_DB_LIMIT)
   order = util.param('order') or '-stars'
   if 'repo' in order:
     order = '-public_repos'
@@ -111,7 +111,7 @@ def organization():
 
 @app.route('/repositories/')
 def repo():
-  limit = int(util.param('limit', int) or flask.request.cookies.get('limit') or config.MAX_DB_LIMIT)
+  limit = min(int(util.param('limit', int) or flask.request.cookies.get('limit') or config.MAX_DB_LIMIT), config.MAX_DB_LIMIT * 4)
   order = util.param('order') or '-stars'
   if 'fork' in order:
     order = '-forks'
