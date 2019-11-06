@@ -36,8 +36,8 @@
       <hr>
       <h4 class="text-muted" title="Last Sync / Status">
         <span class="fa fa-fw fa-refresh {{'fa-spin text-success' if account_db.status == 'syncing'}}"></span>
-        <time datetime="{{account_db.modified}}">
-          {{account_db.modified.strftime('%Y-%m-%d')}}
+        <time datetime="{{account_db.synced}}">
+          {{account_db.synced.strftime('%Y-%m-%d')}}
         </time>
         <small id="status" data-status="{{account_db.status}}">({{account_db.status}})</small>
       </h4>

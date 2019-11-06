@@ -175,27 +175,32 @@ def queue_account(account_db):
 
   max_repos = 3000
   queue_it = False
-  delta = (datetime.utcnow() - account_db.modified)
+  delta = datetime.utcnow() - account_db.synced
 
   if account_db.status in ['new', 'error']:
     account_db.status = 'syncing'
+    account_db.synced = datetime.utcnow()
     account_db.put()
     queue_it = True
 
   elif delta.days > 0 and account_db.status == 'failed' and account_db.public_repos < max_repos:
     account_db.status = 'syncing'
+    account_db.synced = datetime.utcnow()
     account_db.put()
     queue_it = True
 
   elif account_db.status == 'syncing':
     if delta.seconds > 60 * 60 or account_db.public_repos > max_repos:
       account_db.status = 'failed'
+      account_db.synced = datetime.utcnow()
       account_db.put()
     elif delta.seconds > 30 * 60:
       queue_it = True
 
-  if (delta.days > 0) and account_db.status != 'failed':
+  # older than 4 hours long sunc them
+  if (delta.days > 0 or delta.seconds > 60 * 60 * 4) and account_db.status != 'failed':
     account_db.status = 'syncing'
+    account_db.synced = datetime.utcnow()
     account_db.put()
     queue_it = True
 
@@ -267,6 +272,7 @@ def sync_account(account_db):
 
   account_db.language = max(languages.iteritems(), key=operator.itemgetter(1))[0] if languages else ''
   account_db.status = 'synced'
+  account_db.synced = datetime.utcnow()
   account_db.stars = stars
   account_db.forks = forks
   account_db.put()
@@ -332,7 +338,10 @@ def account_rank(organization):
   )
   updated_dbs = []
   for index, account_db in enumerate(account_dbs, start=1):
-    account_db.rank = index
+    if index < config.MAX_DB_LIMIT:
+      account_db.rank = index
+    else:
+      account_db.rank = 0
     updated_dbs.append(account_db)
 
   ndb.put_multi(updated_dbs)

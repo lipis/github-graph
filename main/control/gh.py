@@ -6,6 +6,7 @@ import flask
 from google.appengine.api import urlfetch
 import github
 
+import auth
 import config
 import model
 import util
@@ -63,9 +64,8 @@ def gh_account(username, repo=None):
 # Cron Stuff
 ###############################################################################
 @app.route('/admin/cron/repo/')
+@auth.cron_required
 def gh_admin_top():
-  if config.PRODUCTION and 'X-Appengine-Cron' not in flask.request.headers:
-    flask.abort(403)
   stars = util.param('stars', int) or 10000
   page = util.param('page', int) or 1
   per_page = util.param('per_page', int) or 100
@@ -92,11 +92,10 @@ def gh_admin_top():
 
 
 @app.route('/admin/cron/sync/')
+@auth.cron_required
 def admin_cron():
-  if config.PRODUCTION and 'X-Appengine-Cron' not in flask.request.headers:
-    flask.abort(403)
   account_dbs, account_cursor = model.Account.get_dbs(
-    order=util.param('order') or 'modified',
+    order=util.param('order') or 'synced',
     status=util.param('status'),
   )
 
@@ -107,25 +106,21 @@ def admin_cron():
 
 
 @app.route('/admin/cron/repo/cleanup/')
+@auth.cron_required
 def admin_repo_cleanup():
-  if config.PRODUCTION and 'X-Appengine-Cron' not in flask.request.headers:
-    flask.abort(403)
   task.queue_repo_cleanup(util.param('days', int) or 5)
   return 'OK'
 
 
 @app.route('/admin/cron/account/cleanup/')
+@auth.cron_required
 def admin_account_cleanup():
-  if config.PRODUCTION and 'X-Appengine-Cron' not in flask.request.headers:
-    flask.abort(403)
   task.queue_account_cleanup(util.param('stars', int) or 9999)
   return 'OK'
 
 
 @app.route('/admin/cron/rank/')
+@auth.cron_required
 def admin_rank():
-  if config.PRODUCTION and 'X-Appengine-Cron' not in flask.request.headers:
-    flask.abort(403)
-
   task.rank_accounts()
   return 'OK'
